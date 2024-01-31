@@ -111,7 +111,7 @@ def _get_relevant_dicom_tags(filename: str) -> dict:
         }
         for key in keys_to_extract:
             output_dict[keys_to_extract[key]] = series_reader.GetMetaData(0, key)
-    except RuntimeError as e:
+    except (RuntimeError, IndexError) as e:
         # print(
         #     f"WARNING: Could not read DICOM tags from {input_dicom_dir}.",
         # )
