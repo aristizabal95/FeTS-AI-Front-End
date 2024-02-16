@@ -92,14 +92,14 @@ class AddToCSV(RowStage):
             update_row_with_dict(report, report_data, index)
             return report, False
 
-        if f"{id}_{tp}" in self.csv_processor.subject_timepoint_missing_modalities:
+        if any([f"{id}_{tp}" in x for x in self.csv_processor.subject_timepoint_missing_modalities]):
             shutil.rmtree(tp_out_path, ignore_errors=True)
             # Differentiate errors by floating point value
             status_code = -self.status_code - 0.1  # -1.1
             report_data["status"] = status_code
             report_data["data_path"] = tp_path
             success = False
-        elif f"{id}_{tp}" in self.csv_processor.subject_timepoint_extra_modalities:
+        elif any([f"{id}_{tp}" in x for x in self.csv_processor.subject_timepoint_extra_modalities]):
             shutil.rmtree(tp_out_path, ignore_errors=True)
             # Differentiate errors by floating point value
             status_code = -self.status_code - 0.2  # -1.2
