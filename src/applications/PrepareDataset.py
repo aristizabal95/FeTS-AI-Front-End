@@ -143,6 +143,8 @@ def save_screenshot(
 
     cmd_path = os.path.join(os.path.dirname(__file__), "figure_generator_wrapper.py")
     cmd = f"python3 {cmd_path} -i={images} -ylabels={ylabels} -output={output_filename}"
+    if input_mask is not None:
+        cmd += f" -masks={input_mask}"
     subprocess.run(cmd, check=True)
 
 
