@@ -88,7 +88,7 @@ RUN pip install git+https://github.com/mlcommons/GaNDLF@616b37bafad8f89d5c816a88
 # setup a separate env for nnunet
 RUN python -m venv /nnunet_env && /nnunet_env/bin/pip install --upgrade pip
 
-RUN /nnunet_env/bin/pip install torch==1.12.1+cu102 torchvision==0.13.1+cu102 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu102
+RUN /nnunet_env/bin/pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu118
 
 RUN /nnunet_env/bin/pip install git+https://github.com/MIC-DKFZ/nnUNet.git@nnunetv1
 
