@@ -103,6 +103,7 @@ def init_pipeline(args):
         nifti_data_out,
         INTERIM_FOLDER,
         # loop,
+        "extract_brain",
         BRAIN_STAGE_STATUS,
     )
     tumor_extract_proc = ExtractNnUNet(

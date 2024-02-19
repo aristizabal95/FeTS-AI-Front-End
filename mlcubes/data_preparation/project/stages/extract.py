@@ -4,10 +4,9 @@ import pandas as pd
 import os
 import shutil
 import traceback
-import subprocess
 
 from .row_stage import RowStage
-from .PrepareDataset import FINAL_FOLDER
+from .PrepareDataset import Preparator, FINAL_FOLDER
 from .utils import update_row_with_dict, get_id_tp, md5_file
 
 
@@ -19,6 +18,8 @@ class Extract(RowStage):
         subpath: str,
         prev_stage_path: str,
         prev_subpath: str,
+        # pbar: tqdm,
+        func_name: str,
         status_code: int,
         extra_labels_path=[],
     ):
@@ -29,15 +30,18 @@ class Extract(RowStage):
         self.prev_path = prev_stage_path
         self.prev_subpath = prev_subpath
         os.makedirs(self.out_path, exist_ok=True)
+        self.prep = Preparator(data_csv, out_path, "BraTSPipeline")
+        self.func_name = func_name
+        self.func = getattr(self.prep, func_name)
+        self.pbar = tqdm()
         self.failed = False
         self.exception = None
         self.__status_code = status_code
         self.extra_labels_path = extra_labels_path
-        print(self.extra_labels_path)
 
     @property
     def name(self) -> str:
-        return "Extract brain"
+        return self.func_name.replace("_", " ").capitalize()
 
     @property
     def status_code(self) -> str:
@@ -68,11 +72,20 @@ class Extract(RowStage):
         Returns:
             pd.DataFrame: Updated report dataframe
         """
+        self.__prepare_exec()
         self.__copy_case(index)
         self._process_case(index)
         report, success = self.__update_state(index, report)
+        self.prep.write()
 
         return report, success
+
+    def __prepare_exec(self):
+        # Reset the file contents for errors
+        open(self.prep.stderr_log, "w").close()
+
+        # Update the out dataframes to current state
+        self.prep.read()
 
     def __get_paths(self, index: Union[str, int], path: str, subpath: str):
         id, tp = get_id_tp(index)
@@ -88,11 +101,14 @@ class Extract(RowStage):
 
     def _process_case(self, index: Union[str, int]):
         id, tp = get_id_tp(index)
-        cmd = f'python3 -m project.stages.extract_sp --input-csv={self.data_csv} --output-dir={self.out_path} --subject-id={id} --timepoint={tp}'
-        
-        # Run command as a subprocess to avoid memory leaks
-        subprocess.run(cmd.split(), check=True)
-        # self.func(row, self.pbar)
+        df = self.prep.subjects_df
+        row_search = df[(df["SubjectID"] == id) & (df["Timepoint"] == tp)]
+        if len(row_search) > 0:
+            row = row_search.iloc[0]
+        else:
+            # Most probably this case was semi-prepared. Mock a row
+            row = pd.Series({"SubjectID": id, "Timepoint": tp, "T1": "", "T1GD": "", "T2": "", "FLAIR": ""})
+        self.func(row, self.pbar)
 
     def __hide_paths(self, hide_paths):
         for path in hide_paths:
