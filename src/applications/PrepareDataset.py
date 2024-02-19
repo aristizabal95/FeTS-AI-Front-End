@@ -184,7 +184,7 @@ def _read_image_with_min_check(filename):
             sitk.WriteImage(output_image, filename)
             return 0
         else:
-            return counts.astype(int)
+            return counts.sum().astype(int)
 
     return 0
 
