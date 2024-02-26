@@ -145,7 +145,7 @@ def save_screenshot(
     cmd = f"python3 {cmd_path} -i={images} -ylabels={ylabels} -output={output_filename}"
     if input_mask is not None:
         cmd += f" -masks={input_mask}"
-    subprocess.run(cmd, check=True)
+    subprocess.run(cmd.split(), check=True)
 
 
 def _read_image_with_min_check(filename):

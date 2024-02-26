@@ -11,7 +11,7 @@ def setup_argparser():
 
 def main():
     args = setup_argparser().parse_args()
-    images = args.images
+    images = args.i
     ylabels = args.ylabels
     output_filename = args.output
     input_mask = args.masks
