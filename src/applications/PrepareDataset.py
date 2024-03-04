@@ -601,6 +601,7 @@ class Preparator:
 
             command = (
                 bratsPipeline_exe
+                + " -d "
                 + " -t1 "
                 + row[parsed_headers["T1"]]
                 + " -t1c "
