@@ -105,6 +105,7 @@ class CSVCreator:
             return
 
         modality_folders = os.listdir(timepoint_dir)
+        modality_folders = [folder for folder in modality_folders if os.path.isdir(os.path.join(timepoint_dir, folder))]
         # check if there are missing modalities
         if len(modality_folders) < 4:
             self.subject_timepoint_missing_modalities.append(subject + "_" + timepoint)
