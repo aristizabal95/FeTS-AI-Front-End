@@ -73,6 +73,7 @@ class AddToCSV(RowStage):
         # We will first copy the timepoint to the out folder
         # This is so, if successful, the csv will point to the data
         # in the next stage, instead of the previous
+        shutil.rmtree(tp_out_path, ignore_errors=True)
         shutil.copytree(tp_path, tp_out_path)
 
         try:
