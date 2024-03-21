@@ -357,8 +357,12 @@ class GenerateReport(DatasetStage):
 
                 if index in report.index:
                     # Case has already been identified, see if input hash is different
+                    # or if status is corrupted
                     # if so, override the contents and restart the state for that case
-                    if report.loc[index]["input_hash"] == input_hash:
+                    case = report.loc[index]
+                    has_not_changed = case["input_hash"] == input_hash
+                    has_a_valid_status = isinstance(case["status"], float) and not np.isnan(case["status"])
+                    if has_not_changed and has_a_valid_status:
                         continue
 
                     shutil.rmtree(out_tp_path, ignore_errors=True)
@@ -366,6 +370,7 @@ class GenerateReport(DatasetStage):
                     report = report.drop(index)
                 else:
                     # New case not identified by the report. Add it
+                    shutil.rmtree(out_tp_path, ignore_errors=True)
                     shutil.copytree(in_tp_path, out_tp_path)
 
                 data = {
