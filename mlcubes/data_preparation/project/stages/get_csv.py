@@ -93,23 +93,35 @@ class AddToCSV(RowStage):
             update_row_with_dict(report, report_data, index)
             return report, False
 
-        if any([f"{id}_{tp}" in x for x in self.csv_processor.subject_timepoint_missing_modalities]):
-            shutil.rmtree(tp_out_path, ignore_errors=True)
-            # Differentiate errors by floating point value
-            status_code = -self.status_code - 0.1  # -1.1
-            report_data["status"] = status_code
-            report_data["data_path"] = tp_path
-            success = False
-        elif any([f"{id}_{tp}" in x for x in self.csv_processor.subject_timepoint_extra_modalities]):
-            shutil.rmtree(tp_out_path, ignore_errors=True)
-            # Differentiate errors by floating point value
-            status_code = -self.status_code - 0.2  # -1.2
-            report_data["status"] = status_code
-            report_data["data_path"] = tp_path
-            success = False
-        else:
+        missing = self.csv_processor.subject_timepoint_missing_modalities
+        extra = self.csv_processor.subject_timepoint_extra_modalities
+
+        success = True
+        report_data["comment"] = ""
+        for missing_subject, msg in missing:
+            if f"{id}_{tp}" in missing_subject:
+                # Differentiate errors by floating point value
+                status_code = -self.status_code - 0.1  # -1.1
+                report_data["status"] = status_code
+                report_data["data_path"] = tp_path
+                report_data["comment"] += "\n\n" + msg
+                success = False
+
+        for extra_subject, msg in extra:
+            if f"{id}_{tp}" in extra_subject:
+                # Differentiate errors by floating point value
+                status_code = -self.status_code - 0.2  # -1.2
+                report_data["status"] = status_code
+                report_data["data_path"] = tp_path
+                report_data["comment"] += "\n\n" + msg
+                success = False
+
+        if success:
             shutil.rmtree(tp_path)
-            success = True
+        else:
+            shutil.rmtree(tp_out_path, ignore_errors=True)
+
+        report_data["comment"] = report_data["comment"].strip()
 
         update_row_with_dict(report, report_data, index)
 
