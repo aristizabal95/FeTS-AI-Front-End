@@ -60,11 +60,22 @@ class NIfTITransform(RowStage):
         """
         self.__prepare_exec()
         self.__process_case(index)
+        self.__cleanup_artifacts(index)
         report, success = self.__update_report(index, report)
         self.prep.write()
         self.__update_metadata()
 
         return report, success
+
+    def __cleanup_artifacts(self, index):
+        unused_artifacts_substrs = ["raw", "to_SRI", ".mat"]
+        _, out_path = self.__get_output_paths(index)
+        root_artifacts = os.listdir(out_path)
+        for artifact in root_artifacts:
+            if not any([substr in artifact for substr in unused_artifacts_substrs]):
+                continue
+            artifact_path = os.path.join(out_path, artifact)
+            os.remove(artifact_path)
 
     def __get_output_paths(self, index: Union[str, int]):
         id, tp = get_id_tp(index)
