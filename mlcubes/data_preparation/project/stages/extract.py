@@ -97,6 +97,7 @@ class Extract(RowStage):
         prev_paths = self.__get_paths(index, self.prev_path, self.prev_subpath)
         copy_paths = self.__get_paths(index, self.out_path, self.prev_subpath)
         for prev, copy in zip(prev_paths, copy_paths):
+            shutil.rmtree(copy, ignore_errors=True)
             shutil.copytree(prev, copy, dirs_exist_ok=True)
 
     def _process_case(self, index: Union[str, int]):
