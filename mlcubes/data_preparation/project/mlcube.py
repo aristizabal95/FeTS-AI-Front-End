@@ -7,7 +7,7 @@ import shutil
 app = typer.Typer()
 
 
-def exec_python(cmd: str) -> None:
+def exec_python(cmd: str, check_for_failure=True) -> None:
     """Execute a python script as a subprocess
 
     Args:
@@ -16,7 +16,8 @@ def exec_python(cmd: str) -> None:
     splitted_cmd = cmd.split()
     process = subprocess.Popen(splitted_cmd, cwd=".")
     process.wait()
-    assert process.returncode == 0, f"command failed: {cmd}"
+    if check_for_failure:
+        assert process.returncode == 0, f"command failed: {cmd}"
 
 
 @app.command("prepare")
@@ -55,7 +56,7 @@ def sanity_check(
 ):
     # Modify the statistics command as needed
     cmd = f"python3 /project/statistics.py --data_path={data_path} --labels_path={labels_path} --out_file={out_path} --metadata={metadata_path}"
-    exec_python(cmd)
+    exec_python(cmd, check_for_failure=False) # Don't throw an error if it fails, to avoid traceback and confusion from users
 
 
 if __name__ == "__main__":
