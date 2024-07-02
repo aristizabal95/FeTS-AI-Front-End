@@ -2,6 +2,7 @@ from pandas import DataFrame
 from typing import Union, List, Tuple
 from tqdm import tqdm
 import traceback
+import tempfile
 import yaml
 import os
 
@@ -30,8 +31,12 @@ def normalize_report_paths(report: DataFrame) -> DataFrame:
 def write_report(report: DataFrame, filepath: str):
     report = normalize_report_paths(report)
     report_dict = report.to_dict()
-    with open(filepath, "w") as f:
+    
+    # Use a temporary file to avoid quick writes collisions and corruption
+    temp_fd, temp_path = tempfile.mkstemp(suffix='.yaml')
+    with os.fdopen(temp_fd, 'w') as f:
         yaml.dump(report_dict, f)
+    os.rename(temp_path, filepath)
 
 
 class Pipeline:
