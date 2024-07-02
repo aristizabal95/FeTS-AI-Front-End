@@ -2,7 +2,7 @@ from pandas import DataFrame
 from typing import Union, List, Tuple
 from tqdm import tqdm
 import traceback
-import tempfile
+from pathlib import Path
 import yaml
 import os
 
@@ -33,8 +33,8 @@ def write_report(report: DataFrame, filepath: str):
     report_dict = report.to_dict()
     
     # Use a temporary file to avoid quick writes collisions and corruption
-    temp_fd, temp_path = tempfile.mkstemp(suffix='.yaml')
-    with os.fdopen(temp_fd, 'w') as f:
+    temp_path = Path(filepath).parent / ".report.yaml"
+    with open(temp_path, 'w') as f:
         yaml.dump(report_dict, f)
     os.rename(temp_path, filepath)
 
