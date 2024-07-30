@@ -155,6 +155,7 @@ class ManualStage(RowStage):
         return report
 
     def could_run(self, index: Union[str, int], report: pd.DataFrame) -> bool:
+        print(f"Checking if {self.name} can run")
         out_path = self.__get_output_path(index)
         cases = []
         if os.path.exists(out_path):
@@ -169,6 +170,7 @@ class ManualStage(RowStage):
         segmentation_exists = os.path.exists(in_path)
         annotation_exists = len(cases) == 1
         brain_mask_changed = brain_mask_hash != expected_brain_mask_hash
+        print(f"{segmentation_exists=} and (not {annotation_exists=} or {brain_mask_changed=})")
         return segmentation_exists and (not annotation_exists or brain_mask_changed)
 
     def execute(

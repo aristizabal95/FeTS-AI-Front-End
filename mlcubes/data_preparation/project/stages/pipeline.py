@@ -145,6 +145,8 @@ class Pipeline:
                 runnable_stage = self.stages[i]
                 could_run_stages.append(runnable_stage)
 
+        print(f"Possible next stages: {[stage.name for stage in could_run_stages]}")
+
         # TODO: split into a function
         if len(could_run_stages) == 1:
             stage = could_run_stages[0]
@@ -159,6 +161,7 @@ class Pipeline:
         # Either no stage can be executed (len(could_run_stages == 0))
         # or multiple stages can be executed (len(could_run_stages > 1))
         report_stage = self.__get_report_stage_to_run(subject, report)
+        print(f"Reported next stage: {report_stage.name}")
 
         # TODO: split into a function
         if len(could_run_stages) == 0:
@@ -237,9 +240,12 @@ class Pipeline:
             # Filter out invalid subjects
             working_report = report[~report.index.isin(invalid_subjects)].copy()
 
+            print(f"Determining next stage for {subject}", flush=True)
             stage, done = self.determine_next_stage(subject, working_report)
+            print(f"Next stage for {subject}: {stage.name}", flush=True)
 
             if done:
+                print(f"Subject {subject} is Done", flush=True)
                 break
 
             try:

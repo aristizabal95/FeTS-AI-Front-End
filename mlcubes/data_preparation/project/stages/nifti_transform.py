@@ -42,10 +42,13 @@ class NIfTITransform(RowStage):
         Returns:
             bool: Wether this stage could be executed for the given case
         """
+        print(f"Checking if {self.name} can run")
         id, tp = get_id_tp(index)
         prev_case_path = os.path.join(self.prev_stage_path, id, tp)
         if os.path.exists(prev_case_path):
-            return len(os.listdir(prev_case_path)) > 0
+            is_valid = len(os.listdir(prev_case_path)) > 0 
+            print(f"{is_valid}")
+            return is_valid
         return False
 
     def execute(self, index: Union[str, int], report: pd.DataFrame) -> pd.DataFrame:

@@ -47,10 +47,12 @@ class AddToCSV(RowStage):
         Returns:
             bool: wether this stage could be executed
         """
+        print(f"Checking if {self.name} can run")
         id, tp = get_id_tp(index)
         prev_case_path = os.path.join(self.prev_stage_path, id, tp)
-
-        return os.path.exists(prev_case_path)
+        is_valid = os.path.exists(prev_case_path)
+        print(f"{is_valid=}")
+        return is_valid
 
     def execute(
         self, index: Union[str, int], report: pd.DataFrame

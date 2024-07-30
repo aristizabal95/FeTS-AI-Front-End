@@ -57,8 +57,11 @@ class Extract(RowStage):
         Returns:
             bool: Wether this stage could be executed for the given case
         """
+        print(f"Checking if {self.name} can run")
         prev_paths = self.__get_paths(index, self.prev_path, self.prev_subpath)
-        return all([os.path.exists(path) for path in prev_paths])
+        is_valid = all([os.path.exists(path) for path in prev_paths])
+        print(f"{is_valid=}")
+        return is_valid
 
     def execute(
         self, index: Union[str, int], report: pd.DataFrame
