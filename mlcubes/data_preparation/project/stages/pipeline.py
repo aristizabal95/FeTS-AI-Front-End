@@ -161,7 +161,8 @@ class Pipeline:
         # Either no stage can be executed (len(could_run_stages == 0))
         # or multiple stages can be executed (len(could_run_stages > 1))
         report_stage = self.__get_report_stage_to_run(subject, report)
-        print(f"Reported next stage: {report_stage.name}")
+        if report_stage is not None:
+            print(f"Reported next stage: {report_stage.name}")
 
         # TODO: split into a function
         if len(could_run_stages) == 0:
@@ -242,7 +243,8 @@ class Pipeline:
 
             print(f"Determining next stage for {subject}", flush=True)
             stage, done = self.determine_next_stage(subject, working_report)
-            print(f"Next stage for {subject}: {stage.name}", flush=True)
+            if stage is not None:
+                print(f"Next stage for {subject}: {stage.name}", flush=True)
 
             if done:
                 print(f"Subject {subject} is Done", flush=True)
